@@ -1,0 +1,103 @@
+{
+	"info": {
+		"_postman_id": "4374fbae-9f9e-4804-9bff-fb24695c9636",
+		"name": "PlanEjecucionVictorEscobarADO2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23898329"
+	},
+	"item": [
+		{
+			"name": "Generate Authentication",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"User\", \"vlopez\");\r",
+							"pm.collectionVariables.set(\"Pass\", \"Trocar@123\");\r",
+							"pm.collectionVariables.set(\"UrlXcelera\",\"https://app.x-celera.com/xcelera-api/\")\r",
+							"pm.collectionVariables.set(\"AccessKey\", \"ksg9zswdxss6b9a4kngupn8ky963ij7cafsflo4vl\");\r",
+							"pm.collectionVariables.set(\"testPlan\",\"24279\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Validate response contains token\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"accessToken\");\r",
+							"});\r",
+							"pm.test(\"Validate token contains valaue\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"AuthToken\", jsonData.Data.accessToken);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Username\": \"{{User}}\",\r\n    \"Password\": \"{{Pass}}\",\r\n    \"AccessKey\": \"{{AccessKey}}\"    //AccessKey Treinamento\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{UrlXcelera}}api/auth",
+					"host": [
+						"{{UrlXcelera}}api"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Execute Test Plan",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AuthToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ExecutionPlanId\":{{testPlan}},\r\n    \"DebugMode\": 1 //0-Release or 1-Debug\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{UrlXcelera}}api/v1/executions",
+					"host": [
+						"{{UrlXcelera}}api"
+					],
+					"path": [
+						"v1",
+						"executions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
